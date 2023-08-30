@@ -21,31 +21,38 @@ void delay(unsigned int tiempo)
 	  for(j=0; j<1275; j++);
 }
 
+typedef enum estados {randomizar, mostrar} estados;
 void main(void)
 {
     TRISIO = 0b00100000; // setup del I/O (GP5 como entrada)
 	GPIO = 0x00;         // valor inicial de GPIO
 
-    unsigned int time = 10;
+    unsigned int time = 500;
 	unsigned int dice_value = 1;
-
+	estados estado = randomizar;
     while (1) {
-		if (GP5 != 1) {
-			dice_value = dice_value + 1;
+		switch (estado) {
+			case randomizar:
+				GPIO = 0b00000;
+				if (GP5 != 1) {estado = mostrar;}
+				dice_value = dice_value + 1;
 
-			if (dice_value > 6) {
-				dice_value = 1;
-			}
+				if (dice_value > 6) {
+					dice_value = 1;
+				}
+			break;
+			case mostrar:
+				switch (dice_value) {
+					case 1: GPIO = 0b01000; break;
+					case 2: GPIO = 0b00100; break;
+					case 3: GPIO = 0b01100; break;
+					case 4: GPIO = 0b00101; break;
+					case 5: GPIO = 0b01101; break;
+					case 6: GPIO = 0b10111; break;
+				}
+				delay(time);
+				estado = randomizar;
+			break;
 		}
-
-		switch (dice_value) {
-			case 1: GPIO = 0b01000; break;
-			case 2: GPIO = 0b00100; break;
-			case 3: GPIO = 0b01100; break;
-			case 4: GPIO = 0b00101; break;
-			case 5: GPIO = 0b01101; break;
-			case 6: GPIO = 0b10111; break;
-		}
-		delay(time);
     }
 }

@@ -1,14 +1,14 @@
-#include <pic14/pic12f675.h>
+#include <pic14/pic12f683.h>
 
 // registro de configuración. créditos a Raphael Neider:
 // https://sourceforge.net/p/sdcc/discussion/1865/thread/06684379/
 // los detalles de los configwords se pueden ver en el propio
-// header pic12f675.h.
+// header pic12f683.h.
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 
 __code uint16_t __at(0x2007) __configword =
-	_CPD_OFF & _CP_OFF & _BODEN_ON & _MCLRE_ON &
+	_CPD_OFF & _CP_OFF & _MCLRE_ON &
 	_PWRTE_OFF & _WDT_OFF & _INTRC_OSC_NOCLKOUT;
 
 // codigo del ejemplo hola PIC proporcionado por el profesor

@@ -8,7 +8,7 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 
 __code uint16_t __at(0x2007) __configword =
-	_CPD_OFF & _CP_OFF & _MCLRE_ON &
+	_CPD_OFF & _CP_OFF & _MCLRE_OFF &
 	_PWRTE_OFF & _WDT_OFF & _INTRC_OSC_NOCLKOUT;
 
 // codigo del ejemplo hola PIC proporcionado por el profesor
@@ -38,7 +38,14 @@ void main(void)
 			}
 		}
 
-		GPIO = dice_value;
+		switch (dice_value) {
+			case 1: GPIO = 0b01000; break;
+			case 2: GPIO = 0b00100; break;
+			case 3: GPIO = 0b01100; break;
+			case 4: GPIO = 0b00101; break;
+			case 5: GPIO = 0b01101; break;
+			case 6: GPIO = 0b10111; break;
+		}
 		delay(time);
     }
 }

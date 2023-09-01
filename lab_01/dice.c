@@ -43,12 +43,12 @@ void main(void)
 			break;
 			case mostrar:
 				switch (dice_value) {
-					case 1: GPIO = 0b01000; break;
+					case 1: GPIO = 0b10000; break;
 					case 2: GPIO = 0b00100; break;
-					case 3: GPIO = 0b01100; break;
+					case 3: GPIO = 0b10100; break;
 					case 4: GPIO = 0b00101; break;
-					case 5: GPIO = 0b01101; break;
-					case 6: GPIO = 0b10111; break;
+					case 5: GPIO = 0b10101; break;
+					case 6: GPIO = 0b00111; break;
 				}
 				delay(time);
 				estado = randomizar;

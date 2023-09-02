@@ -22,11 +22,11 @@ Circuit Id: Node-91
 
 Unique  Id: Led-23: 
 Circuit Id: Led-10
-<item objectName="Led-23" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-52" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-23" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-52" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Led-22: 
 Circuit Id: Led-10
-<item objectName="Led-22" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-52" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-22" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-52" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Push-2: 
 Circuit Id: Push-2
@@ -46,23 +46,23 @@ Circuit Id: Ground-5
 
 Unique  Id: Led-10: 
 Circuit Id: Led-10
-<item objectName="Led-10" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-164" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-10" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-164" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Led-11: 
 Circuit Id: Led-10
-<item objectName="Led-11" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-11" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-108" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Led-13: 
 Circuit Id: Led-10
-<item objectName="Led-13" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-164" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-13" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-164" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Led-14: 
 Circuit Id: Led-10
-<item objectName="Led-14" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-14" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-12" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Led-30: 
 Circuit Id: Led-10
-<item objectName="Led-30" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="0" circRot="0" x="-60" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="2.4" Show_id="false" Resistance="0.6"/>
+<item objectName="Led-30" vflip="1" valLabely="0" boardPos="-1e+06,-1e+06" valLabelx="0" itemtype="Led" y="-108" valLabRot="0" labely="-24" Grounded="false" Color="3" circRot="0" x="-60" boardRot="-1e+06" rotation="90" hflip="1" labelx="-16" id="Led-10" MaxCurrent="0.03" circPos="0,0" labelrot="0" mainComp="false" Threshold="3.6" Show_id="false" Resistance="0.6"/>
 
 Unique  Id: Ground-32: 
 Circuit Id: Ground-32

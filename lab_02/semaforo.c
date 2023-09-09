@@ -16,6 +16,7 @@ typedef enum estados {
 } estados;
 
 unsigned int volatile ciclos = 0;
+unsigned int volatile boton = 0;
 
 ISR (TIMER0_OVF_vect) {
   ciclos++;
@@ -38,7 +39,12 @@ void retardo(unsigned int segundos) {
 void setup() {
     // habilitar interrupciones (global)
     sei(); 
-
+    // configurar interrupciones externas
+    GIMSK |= (1<<INT0); //habilita interrupcion por INT0
+    MCUCR |= (1<<ISC00)|(1<<ISC01); // Configura el tipo de interrupcion, en esta caso habilita en flanco positivo
+    DDRA |= (1<<PA0)|(1<<PA1); // Configura el A0 y A1 como output
+    DDRB |= (1<<PB0)|(1<<PB1); // Configra el B0 y B1 como output
+    DDRD |= (0<<PD2); // Habilita el boton
     // configurar registros de timer0
     TCCR0A=0x00;  // modo normal, cuenta ascendente
     TCCR0B=0x00;  // seleccion de reloj: ninguna, detenido

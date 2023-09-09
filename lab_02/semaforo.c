@@ -6,8 +6,8 @@
 #include <avr/interrupt.h>
 
 typedef enum estados {
-    paso_vehiculo,
-    esperar,
+    //paso_vehiculo,
+    //esperar,
     parpadear_vehiculo,
     detener_vehiculo,
     paso_peaton,
@@ -22,7 +22,7 @@ ISR (TIMER0_OVF_vect) {
   ciclos++;
 }
 
-void retardo(unsigned int segundos) {
+void retardo(float segundos) {
     ciclos=0;
 
     TCNT0=0; // empezar el timer0 en cero
@@ -51,12 +51,16 @@ void setup() {
     TIMSK = (1<<TOIE0); // habilitar interrupcion por overflow
 }
 
-void main() {
+int main() {
     setup();
-    estados estado = paso_vehiculo;
-
+    estados estado = parpadear_vehiculo;
+    while (1)
+    {
+       
+    
+    
     switch (estado) {
-        case paso_vehiculo:
+        /*case paso_vehiculo:
             if (boton){
                 if (diez_segundos){
                     estado = parpadear_vehiculo;
@@ -66,34 +70,60 @@ void main() {
         case esperar:
             if (tiempo_restante){
                 estado = parpadear_vehiculo;
-            } break;
+            } break;*/
 
         case parpadear_vehiculo:
-            if (tres_segundos){
-                estado = detener_vehiculo;
-            }
+            PORTA = ((0<<PA0)|(1<<PA1));
+            retardo(0.5);
+            PORTA = ((0<<PA0)|(0<<PA1));
+            retardo(0.5);   
+            PORTA = ((0<<PA0)|(1<<PA1));
+            retardo(0.5);   
+            PORTA = ((0<<PA0)|(0<<PA1));
+            retardo(0.5);
+            PORTA = ((0<<PA0)|(1<<PA1));
+            retardo(0.5);   
+            PORTA = ((0<<PA0)|(0<<PA1));
+            retardo(0.5);        
+            estado = detener_vehiculo;
+        break;
 
         case detener_vehiculo:
-            if(un_segundo){
-                estado = paso_peaton;
-            }
+            PORTA = ((1<<PA0)|(0<<PA1));
+            retardo(1);  
+            estado = paso_peaton;
+        break;   
 
         case paso_peaton:
-            if (diez_segundos) {
-                estado = parpadear_peaton;
-            }
+            PORTB = ((0<<PB0)|(1<<PB1));
+            retardo(10);   
+            estado = parpadear_peaton;
+            
         break;
 
         case parpadear_peaton:
-            if (tres_segundos) {
-                estado = detener_peaton;
-            }
+            PORTB = ((0<<PB0)|(1<<PB1));
+            retardo(0.5);
+            PORTB = ((0<<PB0)|(0<<PB1));
+            retardo(0.5); 
+            PORTB = ((0<<PB0)|(1<<PB1));
+            retardo(0.5);
+            PORTB = ((0<<PB0)|(0<<PB1));
+            retardo(0.5); 
+            PORTB = ((0<<PB0)|(1<<PB1));
+            retardo(0.5);
+            PORTB = ((0<<PB0)|(0<<PB1));
+            retardo(0.5);     
+            estado = detener_peaton;
+            
         break;
 
         case detener_peaton:
-            if (un_segundo) {
-                estado = paso_vehiculo;
-            }
+            PORTB = ((1<<PB0)|(0<<PB1));
+            retardo(1);   
+            estado = parpadear_vehiculo;
+        
         break;
+    }
     }
 }

@@ -6,8 +6,7 @@
 #include <avr/interrupt.h>
 
 typedef enum estados {
-    //paso_vehiculo,
-    //esperar,
+    paso_vehiculo,
     parpadear_vehiculo,
     detener_vehiculo,
     paso_peaton,
@@ -20,6 +19,10 @@ unsigned int volatile boton = 0;
 
 ISR (TIMER0_OVF_vect) {
   ciclos++;
+}
+
+ISR (INT0_vect) {
+    boton = 1;
 }
 
 void retardo(float segundos) {
@@ -53,24 +56,16 @@ void setup() {
 
 int main() {
     setup();
-    estados estado = parpadear_vehiculo;
+    estados estado = paso_vehiculo;
+    unsigned int esperar = 1;
     while (1)
     {
-       
-    
-    
     switch (estado) {
-        /*case paso_vehiculo:
-            if (boton){
-                if (diez_segundos){
-                    estado = parpadear_vehiculo;
-                } else estado = esperar;
-            } break;
-
-        case esperar:
-            if (tiempo_restante){
-                estado = parpadear_vehiculo;
-            } break;*/
+        case paso_vehiculo:
+            PORTA = ((0<<PA0)|(1<<PA1));
+            if (esperar) {retardo(10); esperar = 0;}
+            if (boton) {estado = parpadear_vehiculo; boton = 0;}
+        break;
 
         case parpadear_vehiculo:
             PORTA = ((0<<PA0)|(1<<PA1));
@@ -121,8 +116,8 @@ int main() {
         case detener_peaton:
             PORTB = ((1<<PB0)|(0<<PB1));
             retardo(1);   
-            estado = parpadear_vehiculo;
-        
+            estado = paso_vehiculo;
+            esperar = 1;
         break;
     }
     }

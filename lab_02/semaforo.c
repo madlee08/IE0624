@@ -16,13 +16,14 @@ typedef enum estados {
 
 unsigned int volatile ciclos = 0;
 unsigned int volatile boton = 0;
+estados volatile estado = paso_vehiculo;
 
 ISR (TIMER0_OVF_vect) {
   ciclos++;
 }
 
 ISR (INT0_vect) {
-    boton = 1;
+    if (estado == paso_vehiculo) boton = 1;
 }
 
 void retardo(float segundos) {
@@ -56,13 +57,13 @@ void setup() {
 
 int main() {
     setup();
-    estados estado = paso_vehiculo;
     unsigned int esperar = 1;
     while (1)
     {
     switch (estado) {
         case paso_vehiculo:
             PORTA = ((0<<PA0)|(1<<PA1));
+            PORTB = ((1<<PB0)|(0<<PB1));
             if (esperar) {retardo(10); esperar = 0;}
             if (boton) {estado = parpadear_vehiculo; boton = 0;}
         break;

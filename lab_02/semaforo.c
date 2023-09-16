@@ -1,3 +1,4 @@
+// define para syntax highlighting de los registros
 #ifndef ___AVR_ATtiny4313__
 #define __AVR_ATtiny4313__
 #endif
@@ -28,30 +29,32 @@ ISR(INT0_vect) {
 
 void retardo(float segundos) {
 	ciclos = 0;
-
 	TCNT0 = 0; // empezar el timer0 en cero
-	TCCR0B = (1<<CS00)|(1<<CS02); // empezar a contar con prescale 1024
+	TCCR0B = (1<<CS00)|(1<<CS02); // empezar a contar
 
-	// la funcion se encicla aquí. el ISR por TIMER0_OVF_vect
-	// ejecuta ciclos++ y eventualmente sale del while. se
-	// requiere alrededor de 62 ciclos para registrar un segundo.
-	while (ciclos<62*segundos) {}
+	// la funcion se encicla aquí y eventualmente
+	// sale del while por ISR(TIMER0_OVF_vect)
+	while (ciclos<61.2745*segundos) {}
 
-	TCCR0B = (0<<CS00)|(0<<CS02); // detener timer0
+	TCCR0B = 0; // detener timer0
 }
 
 void setup() {
 	// habilitar interrupciones (global)
 	sei();
+
 	// configurar interrupciones externas
-	GIMSK |= 1<<INT0; //habilita interrupcion por INT0
-	MCUCR |= (1<<ISC00)|(1<<ISC01); // Configura el tipo de interrupcion, en este caso habilita en flanco positivo
-	DDRA |= (1<<PA0)|(1<<PA1); // Configura el A0 y A1 como output
-	DDRB |= (1<<PB0)|(1<<PB1); // Configra el B0 y B1 como output
-	DDRD |= 0<<PD2; // Habilita el boton
+	GIMSK = 1<<INT0; // habilita interrupcion por INT0 y ...
+	MCUCR = (1<<ISC00)|(1<<ISC01); // ...configura tipo de interrupcion
+
+	// confugurar direccion de datos
+	DDRA = (1<<PA0)|(1<<PA1); // configura el A0 y A1 como output
+	DDRB = (1<<PB0)|(1<<PB1); // configra el B0 y B1 como output
+	DDRD = 0<<PD2;            // configura D2 como input
+
 	// configurar registros de timer0
-	TCCR0A = 0x00;  // modo normal, cuenta ascendente
-	TCCR0B = 0x00;  // seleccion de reloj: ninguna, detenido
+	TCCR0A = 0;  // modo normal, cuenta ascendente
+	TCCR0B = 0;  // seleccion de reloj: ninguna, detenido
 	TIMSK = 1<<TOIE0; // habilitar interrupcion por overflow
 }
 

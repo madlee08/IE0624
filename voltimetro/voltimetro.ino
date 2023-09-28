@@ -17,6 +17,7 @@
 
 
 #include <PCD8544.h>
+#include <math.h>
 
 
 // A custom glyph (a smiley)...
@@ -41,6 +42,7 @@ void setup() {
 
 void loop() {
   // Just to show the program is alive...
+  
   float valor_adc[4];
   valor_adc[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
   valor_adc[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
@@ -54,6 +56,13 @@ void loop() {
   led[2] = 10;
   led[3] = 11;
 
+  int opcion = 0;
+  int AC = 0;
+  int DC = 1;
+  float suma = 0.0;
+  float resultado;
+  float volt[400];
+
   for (int i = 0; i <4; i++) {
     if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
       digitalWrite(led[i], HIGH);
@@ -63,11 +72,23 @@ void loop() {
     }
   }
 
+  for (int j = 0; j < 399; j++){
+    volt[j+1] = volt[j];
+  }
+
+  volt[0] = valor_adc[0];
+
+
+  for (int i = 0; i < 400; i++){
+    suma = volt[i] * volt[i] + suma;
+  }
+  resultado = sqrt((1.0/400.0)*suma);
+  
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 0);
   lcd.print("V1: ");
-  lcd.print(valor_adc[0]);
+  lcd.print(resultado);
 
 
   // Write a piece of text on the first line...

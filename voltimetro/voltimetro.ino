@@ -38,6 +38,7 @@ void setup() {
   pinMode(10 , OUTPUT);
   pinMode(11 , OUTPUT);
   pinMode(12 , INPUT);
+  pinMode(13 , INPUT);
 
 }
 
@@ -52,7 +53,8 @@ void loop() {
   valor_adc[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
   //int valor_adc = analogRead(A0);
 
-  int boton = digitalRead(12);
+  int boton1 = digitalRead(12);
+  int boton2 = digitalRead(13);
   
   int led[4];
   led[0] = 8;
@@ -104,19 +106,23 @@ void loop() {
   lcd.print("V");
   lcd.print(i);
   lcd.print(": ");
-  if (boton) lcd.print(resultado[i]/9.0/sqrt(2));
+  if (boton1) lcd.print(resultado[i]/9.0/sqrt(2));
     else lcd.print(resultado[i]/9.0);
   }
 
-  for (int i = 0; i < 4; i++) {
-  Serial.print("V");
-  Serial.print(i);
-  Serial.print(": ");
-  if (boton) Serial.print(resultado[i]/9.0/sqrt(2));
-    else Serial.print(resultado[i]/9.0);
-  Serial.print("\t");
+  if (boton2){
+    for (int i = 0; i < 4; i++) {
+    Serial.print("V");
+    Serial.print(i);
+    Serial.print(": ");
+    if (boton1) Serial.print(resultado[i]/9.0/sqrt(2));
+      else Serial.print(resultado[i]/9.0);
+    Serial.print("\t");
+    }
+    Serial.print("\n");
   }
-  Serial.print("\n");
+
+
 /*
   // Write a piece of text on the first line...
   lcd.setCursor(0, 1);

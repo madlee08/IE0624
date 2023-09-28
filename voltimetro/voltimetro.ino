@@ -42,7 +42,7 @@ void setup() {
 
 void loop() {
   // Just to show the program is alive...
-  
+  static long count = 0;
   float valor_adc[4];
   valor_adc[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
   valor_adc[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
@@ -60,8 +60,8 @@ void loop() {
   int AC = 0;
   int DC = 1;
   float suma = 0.0;
-  float resultado;
-  float volt[400];
+  float resultado = 0.0;
+  float max[10];
 
   for (int i = 0; i <4; i++) {
     if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
@@ -72,23 +72,27 @@ void loop() {
     }
   }
 
-  for (int j = 0; j < 399; j++){
-    volt[j+1] = volt[j];
+  if (count == 20) {
+    for (int i = 0; i < 9; i++) {
+      max[i+1] = max[i];
+    }
+    max[0] = 0;
+    count = 0;
   }
 
-  volt[0] = valor_adc[0];
-
-
-  for (int i = 0; i < 400; i++){
-    suma = volt[i] * volt[i] + suma;
+  if (valor_adc[0] > max[0]) {
+    max[0] = valor_adc[0];
   }
-  resultado = sqrt((1.0/400.0)*suma);
-  
+
+  for (int i = 1; i < 10; i++) {
+    resultado += max[i];
+  }
+
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 0);
   lcd.print("V1: ");
-  lcd.print(resultado);
+  lcd.print(resultado/9/sqrt(2));
 
 
   // Write a piece of text on the first line...
@@ -111,7 +115,7 @@ void loop() {
   // Use a potentiometer to set the LCD contrast...
   // short level = map(analogRead(A0), 0, 1023, 0, 127);
   // lcd.setContrast(level);
-
+  count++;
   delay(5);
 }
 

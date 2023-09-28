@@ -1,28 +1,4 @@
 /*
- * PCD8544 - Interface with Philips PCD8544 (or compatible) LCDs.
- *
- * Copyright (c) 2010 Carlos Rodrigues <cefrodrigues@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-/*
  * To use this sketch, connect the eight pins from your LCD like thus:
  *
  * Pin 1 -> +3.3V (rightmost, when facing the display head-on)
@@ -61,49 +37,44 @@ void setup() {
 
 void loop() {
   // Just to show the program is alive...
-  int valor_adc[3];
-  valor_adc[0] = analogRead(A0);
-  valor_adc[1] = analogRead(A1);
-  valor_adc[2] = analogRead(A2);
-  valor_adc[3] = analogRead(A3);
+  float valor_adc[4];
+  valor_adc[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
+  valor_adc[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
+  valor_adc[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
+  valor_adc[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
   //int valor_adc = analogRead(A0);
-  float volt1 = 0;
-  float volt2 = 0;
-  float volt3 = 0;
-  float volt4 = 0;
+  
+
+
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 0);
-  lcd.print("Voltaje 1: ");
-  volt1 = (valor_adc[0] / 1023.0) * 5.0;
-  lcd.print(volt1);
+  lcd.print("V1: ");
+  lcd.print(valor_adc[0]);
 
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 1);
-  lcd.print("Voltaje 2: ");
-  volt2 = (valor_adc[1] / 1023.0) * 5.0;
-  lcd.print(volt2);
+  lcd.print("V2: ");
+  lcd.print(valor_adc[1]);
 
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 2);
-  lcd.print("Voltaje 3: ");
-  volt3 = (valor_adc[2] / 1023.0) * 5.0;
-  lcd.print(volt3);
+  lcd.print("V3: ");
+  lcd.print(valor_adc[2]);
 
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 3);
-  lcd.print("Voltaje 4: ");
-  volt4 = (valor_adc[3] / 1023.0) * 5.0;
-  lcd.print(volt4);
+  lcd.print("V4: ");
+  lcd.print(valor_adc[3]);
 
   // Use a potentiometer to set the LCD contrast...
   // short level = map(analogRead(A0), 0, 1023, 0, 127);
   // lcd.setContrast(level);
 
-  delay(200);
+  delay(5);
 }
 
 

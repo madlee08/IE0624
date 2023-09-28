@@ -30,7 +30,7 @@ static PCD8544 lcd;
 void setup() {
   // PCD8544-compatible displays may have a different resolution...
   lcd.begin(84, 48);
-
+  Serial.begin(115200);
   // Add the smiley to position "0" of the ASCII table...
   lcd.createChar(0, glyph);
   pinMode(8 , OUTPUT);
@@ -107,6 +107,16 @@ void loop() {
   if (boton) lcd.print(resultado[i]/9.0/sqrt(2));
     else lcd.print(resultado[i]/9.0);
   }
+
+  for (int i = 0; i < 4; i++) {
+  Serial.print("V");
+  Serial.print(i);
+  Serial.print(": ");
+  if (boton) Serial.print(resultado[i]/9.0/sqrt(2));
+    else Serial.print(resultado[i]/9.0);
+  Serial.print("\t");
+  }
+  Serial.print("\n");
 /*
   // Write a piece of text on the first line...
   lcd.setCursor(0, 1);

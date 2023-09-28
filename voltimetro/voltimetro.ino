@@ -37,6 +37,8 @@ void setup() {
   pinMode(9 , OUTPUT);
   pinMode(10 , OUTPUT);
   pinMode(11 , OUTPUT);
+  pinMode(12 , INPUT);
+
 }
 
 
@@ -49,6 +51,8 @@ void loop() {
   valor_adc[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
   valor_adc[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
   //int valor_adc = analogRead(A0);
+
+  int boton = digitalRead(12);
   
   int led[4];
   led[0] = 8;
@@ -60,8 +64,8 @@ void loop() {
   int AC = 0;
   int DC = 1;
   float suma = 0.0;
-  float resultado = 0.0;
-  float max[10];
+  float resultado[4] = {0.0, 0.0, 0.0, 0.0};
+  float max[4][10];
 
   for (int i = 0; i <4; i++) {
     if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
@@ -73,44 +77,53 @@ void loop() {
   }
 
   if (count == 20) {
-    for (int i = 0; i < 9; i++) {
-      max[i+1] = max[i];
+    for (int j = 0; j <= 3; j++){
+      for (int i = 0; i < 9; i++) {
+        max[j][i+1] = max[j][i];
+      }
+      max[j][0] = -24;
+      count = 0;
     }
-    max[0] = 0;
-    count = 0;
   }
 
-  if (valor_adc[0] > max[0]) {
-    max[0] = valor_adc[0];
-  }
+  for (int j = 0; j <= 3; j++){
 
-  for (int i = 1; i < 10; i++) {
-    resultado += max[i];
+    if (valor_adc[j] > max[j][0]) {
+      max[j][0] = valor_adc[j];
+    }
+
+    for (int i = 1; i < 10; i++) {
+      resultado[j] += max[j][i];
+    }
   }
 
 
   // Write a piece of text on the first line...
-  lcd.setCursor(0, 0);
-  lcd.print("V1: ");
-  lcd.print(resultado/9/sqrt(2));
-
-
+  for (int i = 0; i < 4; i++) {
+  lcd.setCursor(0, i);
+  lcd.print("V");
+  lcd.print(i);
+  lcd.print(": ");
+  if (boton) lcd.print(resultado[i]/9.0/sqrt(2));
+    else lcd.print(resultado[i]/9.0);
+  }
+/*
   // Write a piece of text on the first line...
   lcd.setCursor(0, 1);
   lcd.print("V2: ");
-  lcd.print(valor_adc[1]);
+  lcd.print(resultado[1]/9.0/sqrt(2));
 
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 2);
   lcd.print("V3: ");
-  lcd.print(valor_adc[2]);
+  lcd.print(resultado[2]/9.0/sqrt(2));
 
 
   // Write a piece of text on the first line...
   lcd.setCursor(0, 3);
   lcd.print("V4: ");
-  lcd.print(valor_adc[3]);
+  lcd.print(resultado[3]/9.0/sqrt(2));*/
 
   // Use a potentiometer to set the LCD contrast...
   // short level = map(analogRead(A0), 0, 1023, 0, 127);

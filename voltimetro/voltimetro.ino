@@ -32,6 +32,10 @@ void setup() {
 
   // Add the smiley to position "0" of the ASCII table...
   lcd.createChar(0, glyph);
+  pinMode(8 , OUTPUT);
+  pinMode(9 , OUTPUT);
+  pinMode(10 , OUTPUT);
+  pinMode(11 , OUTPUT);
 }
 
 
@@ -44,7 +48,20 @@ void loop() {
   valor_adc[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
   //int valor_adc = analogRead(A0);
   
+  int led[4];
+  led[0] = 8;
+  led[1] = 9;
+  led[2] = 10;
+  led[3] = 11;
 
+  for (int i = 0; i <4; i++) {
+    if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
+      digitalWrite(led[i], HIGH);
+    }
+    else {
+      digitalWrite(led[i], LOW);
+    }
+  }
 
 
   // Write a piece of text on the first line...

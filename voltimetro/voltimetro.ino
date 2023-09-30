@@ -122,30 +122,8 @@ void loop() {
     Serial.print("\n");
   }
 
-
-/*
-  // Write a piece of text on the first line...
-  lcd.setCursor(0, 1);
-  lcd.print("V2: ");
-  lcd.print(resultado[1]/9.0/sqrt(2));
-
-
-  // Write a piece of text on the first line...
-  lcd.setCursor(0, 2);
-  lcd.print("V3: ");
-  lcd.print(resultado[2]/9.0/sqrt(2));
-
-
-  // Write a piece of text on the first line...
-  lcd.setCursor(0, 3);
-  lcd.print("V4: ");
-  lcd.print(resultado[3]/9.0/sqrt(2));*/
-
-  // Use a potentiometer to set the LCD contrast...
-  // short level = map(analogRead(A0), 0, 1023, 0, 127);
-  // lcd.setContrast(level);
   count++;
-  delay(5);
+  delay(100);
 }
 
 

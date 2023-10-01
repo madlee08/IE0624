@@ -25,33 +25,45 @@
 #define LED(x) (x == 0 ? 8 : (x == 1 ? 9 : (x == 2 ? 10 : (x == 3 ? 11 : -1))))
 
 
-void save_max(float max_volt[4][SIZE], float volt[4]) {
+void leer_tensiones(float tensiones[4][SIZE], int AC) {
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < SIZE; j++) {
-      max_volt[i][j+1] = max_volt[i][j];
+      tensiones[i][j+1] = tensiones[i][j];
     }
 
-    max_volt[i][0] = -24.0;
+    tensiones[i][0] = -24.0;
   }
 
-  for (int i = 0; i < SAMPLES; i++) {
-    volt[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
-    volt[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
-    volt[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
-    volt[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
+  float temp[4];
 
-    for (int j = 0; j < 4; j++){
-      if (volt[j] > max_volt[j][0])
-        max_volt[j][0] = volt[j];
+  if (AC) {
+    for (int i = 0; i < SAMPLES; i++) {
+      temp[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
+      temp[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
+      temp[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
+      temp[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
+
+      for (int j = 0; j < 4; j++){
+        if (temp[j] > tensiones[j][0])
+          tensiones[j][0] = temp[j];
+      }
+      delay(60);
     }
-    delay(60);
+  }
+
+  else {
+      tensiones[0][0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
+      tensiones[1][0] = -24.0 + (analogRead(A1)/1023.0)*48.0;
+      tensiones[2][0] = -24.0 + (analogRead(A2)/1023.0)*48.0;
+      tensiones[3][0] = -24.0 + (analogRead(A3)/1023.0)*48.0;
+      delay(60);
   }
 }
 
-void result(float resultado[4], float max_volt[4][SIZE], int AC) {
+void procesar(float resultado[4], float tensiones[4][SIZE], int AC) {
   for (int i = 0; i < 4; i++) {
     for (int j = 1; j < SIZE; j++) {
-      resultado[i] += max_volt[i][j];
+      resultado[i] += tensiones[i][j];
     }
     resultado[i] /= 9.0;
 
@@ -85,25 +97,24 @@ void setup() {
   pinMode(LED(3) , OUTPUT);
   pinMode(ACDCpin , INPUT_PULLUP);
   pinMode(USARTpin, INPUT_PULLUP);
-
 }
 
 void loop() {
-  float volt[4];
-  float max_volt[4][SIZE];
+  float tensiones[4][SIZE];
   float resultado[4] = {0.0, 0.0, 0.0, 0.0};
-  int AC = digitalRead(ACDCpin);
-  save_max(max_volt, volt);
-  result(resultado, max_volt, AC);
 
+  int AC = digitalRead(ACDCpin);
+
+  leer_tensiones(tensiones, AC);
+  procesar(resultado, tensiones, AC);
   leds(resultado, AC);
 
   for (int i = 0; i < 4; i++) {
-  lcd.setCursor(0, i);
-  lcd.print("V");
-  lcd.print(i);
-  lcd.print(": ");
-  lcd.print(resultado[i]);
+    lcd.setCursor(0, i);
+    lcd.print("V");
+    lcd.print(i);
+    lcd.print(": ");
+    lcd.print(resultado[i]);
   }
 
   if (digitalRead(USARTpin)) {
@@ -114,6 +125,7 @@ void loop() {
       Serial.print(resultado[i]);
       Serial.print("\t");
     }
+    
     Serial.print("\n");
   }
 }

@@ -15,24 +15,51 @@
  * using a 3.3V variant of the Arduino, such as Sparkfun's Arduino Pro).
  */
 
-
+#define SIZE 10
+#define ITERATION 20
 #include <PCD8544.h>
 #include <math.h>
 
 
-// A custom glyph (a smiley)...
-static const byte glyph[] = { B00010000, B00110100, B00110000, B00110100, B00010000 };
+void save_max(float max_volt[4][SIZE], float volt[4]) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < SIZE; j++) {
+      max_volt[i][j+1] = max_volt[i][j];
+    }
 
+    max_volt[i][0] = -24.0;
+  }
+
+  for (int i = 0; i < ITERATION; i++) {
+    volt[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
+    volt[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
+    volt[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
+    volt[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
+
+    for (int j = 0; j < 4; j++){
+      if (volt[j] > max_volt[j][0]) {
+        max_volt[j][0] = volt[j];
+      }
+    }
+    delay(60);
+  }
+}
+
+void result(float resultado[4], float max_volt[4][SIZE]) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 1; j < SIZE; j++) {
+      resultado[i] += max_volt[i][j];
+    }
+  }
+}
 
 static PCD8544 lcd;
-
+const int led[4] = {8, 9, 10, 11};
 
 void setup() {
   // PCD8544-compatible displays may have a different resolution...
   lcd.begin(84, 48);
   Serial.begin(115200);
-  // Add the smiley to position "0" of the ASCII table...
-  lcd.createChar(0, glyph);
   pinMode(8 , OUTPUT);
   pinMode(9 , OUTPUT);
   pinMode(10 , OUTPUT);
@@ -45,61 +72,26 @@ void setup() {
 
 void loop() {
   // Just to show the program is alive...
-  static long count = 0;
-  float valor_adc[4];
-  valor_adc[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
-  valor_adc[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
-  valor_adc[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
-  valor_adc[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
-  //int valor_adc = analogRead(A0);
+  float volt[4];
+  float max_volt[4][SIZE];
+  float resultado[4] = {0.0, 0.0, 0.0, 0.0};
+
+  save_max(max_volt, volt);
 
   int boton1 = digitalRead(12);
   int boton2 = digitalRead(13);
   
-  int led[4];
-  led[0] = 8;
-  led[1] = 9;
-  led[2] = 10;
-  led[3] = 11;
 
-  int opcion = 0;
-  int AC = 0;
-  int DC = 1;
-  float suma = 0.0;
-  float resultado[4] = {0.0, 0.0, 0.0, 0.0};
-  float max[4][10];
+  // for (int i = 0; i <4; i++) {
+  //   if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
+  //     digitalWrite(led[i], HIGH);
+  //   }
+  //   else {
+  //     digitalWrite(led[i], LOW);
+  //   }
+  // }
 
-  for (int i = 0; i <4; i++) {
-    if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
-      digitalWrite(led[i], HIGH);
-    }
-    else {
-      digitalWrite(led[i], LOW);
-    }
-  }
-
-  if (count == 20) {
-    for (int j = 0; j <= 3; j++){
-      for (int i = 0; i < 9; i++) {
-        max[j][i+1] = max[j][i];
-      }
-      max[j][0] = -24;
-      count = 0;
-    }
-  }
-
-  for (int j = 0; j <= 3; j++){
-
-    if (valor_adc[j] > max[j][0]) {
-      max[j][0] = valor_adc[j];
-    }
-
-    for (int i = 1; i < 10; i++) {
-      resultado[j] += max[j][i];
-    }
-  }
-
-
+  result(resultado, max_volt);
   // Write a piece of text on the first line...
   for (int i = 0; i < 4; i++) {
   lcd.setCursor(0, i);
@@ -121,9 +113,6 @@ void loop() {
     }
     Serial.print("\n");
   }
-
-  count++;
-  delay(100);
 }
 
 

@@ -17,6 +17,9 @@
 
 #define SIZE 10
 #define ITERATION 20
+#define USARTpin 13
+#define ACDCpin 12
+#define LED(x) (x == 0 ? 8 : (x == 1 ? 9 : (x == 2 ? 10 : (x == 3 ? 11 : -1))))
 #include <PCD8544.h>
 #include <math.h>
 
@@ -41,7 +44,7 @@ void save_max(float max_volt[4][SIZE], float volt[4]) {
         max_volt[j][0] = volt[j];
       }
     }
-    delay(60);
+    delay(30);
   }
 }
 
@@ -50,25 +53,36 @@ void result(float resultado[4], float max_volt[4][SIZE]) {
     for (int j = 1; j < SIZE; j++) {
       resultado[i] += max_volt[i][j];
     }
+    resultado[i] = resultado[i]/9.0;
   }
 }
 
 static PCD8544 lcd;
-const int led[4] = {8, 9, 10, 11};
 
 void setup() {
   // PCD8544-compatible displays may have a different resolution...
   lcd.begin(84, 48);
   Serial.begin(115200);
-  pinMode(8 , OUTPUT);
-  pinMode(9 , OUTPUT);
-  pinMode(10 , OUTPUT);
-  pinMode(11 , OUTPUT);
-  pinMode(12 , INPUT);
-  pinMode(13 , INPUT);
+  pinMode(LED(0) , OUTPUT);
+  pinMode(LED(1) , OUTPUT);
+  pinMode(LED(2) , OUTPUT);
+  pinMode(LED(3) , OUTPUT);
+  pinMode(ACDCpin , INPUT_PULLUP);
+  pinMode(USARTpin, INPUT_PULLUP);
 
 }
 
+void leds(float resultado[4]) {
+  for (int i = 0; i < 4; i++) {
+    if (abs(resultado[i]) > 20.0) {
+      digitalWrite(LED(i), HIGH);
+    }
+
+    else {
+      digitalWrite(LED(i), LOW);
+    }
+  }
+}
 
 void loop() {
   // Just to show the program is alive...
@@ -80,26 +94,18 @@ void loop() {
 
   int boton1 = digitalRead(12);
   int boton2 = digitalRead(13);
-  
-
-  // for (int i = 0; i <4; i++) {
-  //   if (valor_adc[i] < -20.0 || 20.0 < valor_adc[i]) {
-  //     digitalWrite(led[i], HIGH);
-  //   }
-  //   else {
-  //     digitalWrite(led[i], LOW);
-  //   }
-  // }
 
   result(resultado, max_volt);
+
+  leds(resultado);
   // Write a piece of text on the first line...
   for (int i = 0; i < 4; i++) {
   lcd.setCursor(0, i);
   lcd.print("V");
   lcd.print(i);
   lcd.print(": ");
-  if (boton1) lcd.print(resultado[i]/9.0/sqrt(2));
-    else lcd.print(resultado[i]/9.0);
+  if (boton1) lcd.print(resultado[i]/sqrt(2));
+    else lcd.print(resultado[i]);
   }
 
   if (boton2){
@@ -107,13 +113,10 @@ void loop() {
     Serial.print("V");
     Serial.print(i);
     Serial.print(": ");
-    if (boton1) Serial.print(resultado[i]/9.0/sqrt(2));
-      else Serial.print(resultado[i]/9.0);
+    if (boton1) Serial.print(resultado[i]/sqrt(2));
+      else Serial.print(resultado[i]);
     Serial.print("\t");
     }
     Serial.print("\n");
   }
 }
-
-
-/* EOF - HelloWorld.ino */

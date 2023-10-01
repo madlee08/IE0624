@@ -15,13 +15,14 @@
  * using a 3.3V variant of the Arduino, such as Sparkfun's Arduino Pro).
  */
 
-#define SIZE 10
-#define ITERATION 20
-#define USARTpin 13
-#define ACDCpin 12
-#define LED(x) (x == 0 ? 8 : (x == 1 ? 9 : (x == 2 ? 10 : (x == 3 ? 11 : -1))))
 #include <PCD8544.h>
 #include <math.h>
+
+#define SIZE 10
+#define SAMPLES 20
+#define USARTpin 2
+#define ACDCpin 12
+#define LED(x) (x == 0 ? 8 : (x == 1 ? 9 : (x == 2 ? 10 : (x == 3 ? 11 : -1))))
 
 
 void save_max(float max_volt[4][SIZE], float volt[4]) {
@@ -33,27 +34,42 @@ void save_max(float max_volt[4][SIZE], float volt[4]) {
     max_volt[i][0] = -24.0;
   }
 
-  for (int i = 0; i < ITERATION; i++) {
+  for (int i = 0; i < SAMPLES; i++) {
     volt[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
     volt[1] = -24.0 + (analogRead(A1)/1023.0)*48.0;
     volt[2] = -24.0 + (analogRead(A2)/1023.0)*48.0;
     volt[3] = -24.0 + (analogRead(A3)/1023.0)*48.0;
 
     for (int j = 0; j < 4; j++){
-      if (volt[j] > max_volt[j][0]) {
+      if (volt[j] > max_volt[j][0])
         max_volt[j][0] = volt[j];
-      }
     }
-    delay(30);
+    delay(60);
   }
 }
 
-void result(float resultado[4], float max_volt[4][SIZE]) {
+void result(float resultado[4], float max_volt[4][SIZE], int AC) {
   for (int i = 0; i < 4; i++) {
     for (int j = 1; j < SIZE; j++) {
       resultado[i] += max_volt[i][j];
     }
-    resultado[i] = resultado[i]/9.0;
+    resultado[i] /= 9.0;
+
+    if (AC) resultado[i] /= sqrt(2);
+  }
+}
+
+void leds(float resultado[4], int AC) {
+  for (int i = 0; i < 4; i++) {
+    float threshold = 20.0;
+
+    if (AC) threshold /= sqrt(2);
+
+    if (abs(resultado[i]) > threshold)
+      digitalWrite(LED(i), HIGH);
+
+    else
+      digitalWrite(LED(i), LOW);
   }
 }
 
@@ -72,50 +88,31 @@ void setup() {
 
 }
 
-void leds(float resultado[4]) {
-  for (int i = 0; i < 4; i++) {
-    if (abs(resultado[i]) > 20.0) {
-      digitalWrite(LED(i), HIGH);
-    }
-
-    else {
-      digitalWrite(LED(i), LOW);
-    }
-  }
-}
-
 void loop() {
-  // Just to show the program is alive...
   float volt[4];
   float max_volt[4][SIZE];
   float resultado[4] = {0.0, 0.0, 0.0, 0.0};
-
+  int AC = digitalRead(ACDCpin);
   save_max(max_volt, volt);
+  result(resultado, max_volt, AC);
 
-  int boton1 = digitalRead(12);
-  int boton2 = digitalRead(13);
+  leds(resultado, AC);
 
-  result(resultado, max_volt);
-
-  leds(resultado);
-  // Write a piece of text on the first line...
   for (int i = 0; i < 4; i++) {
   lcd.setCursor(0, i);
   lcd.print("V");
   lcd.print(i);
   lcd.print(": ");
-  if (boton1) lcd.print(resultado[i]/sqrt(2));
-    else lcd.print(resultado[i]);
+  lcd.print(resultado[i]);
   }
 
-  if (boton2){
+  if (digitalRead(USARTpin)) {
     for (int i = 0; i < 4; i++) {
-    Serial.print("V");
-    Serial.print(i);
-    Serial.print(": ");
-    if (boton1) Serial.print(resultado[i]/sqrt(2));
-      else Serial.print(resultado[i]);
-    Serial.print("\t");
+      Serial.print("V");
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.print(resultado[i]);
+      Serial.print("\t");
     }
     Serial.print("\n");
   }

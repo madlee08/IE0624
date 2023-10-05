@@ -18,7 +18,7 @@
 #include <PCD8544.h>
 #include <math.h>
 
-#define SIZE 10
+#define SIZE 5
 #define SAMPLES 20
 #define USARTpin 2
 #define ACDCpin 12
@@ -27,11 +27,10 @@
 
 void leer_tensiones(float tensiones[4][SIZE], int AC) {
   for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < SIZE; j++) {
-      tensiones[i][j+1] = tensiones[i][j];
+    for (int j = SIZE-1; j > 0; j--) {
+      tensiones[i][j] = tensiones[i][j-1];
     }
 
-    tensiones[i][0] = -24.0;
   }
 
   float temp[4];
@@ -47,7 +46,7 @@ void leer_tensiones(float tensiones[4][SIZE], int AC) {
         if (temp[j] > tensiones[j][0])
           tensiones[j][0] = temp[j];
       }
-      delay(60);
+      delay(10);
     }
   }
 
@@ -65,7 +64,7 @@ void procesar(float resultado[4], float tensiones[4][SIZE], int AC) {
     for (int j = 1; j < SIZE; j++) {
       resultado[i] += tensiones[i][j];
     }
-    resultado[i] /= 9.0;
+    resultado[i] /= SIZE-1;
 
     if (AC) resultado[i] /= sqrt(2);
   }
@@ -88,7 +87,6 @@ void leds(float resultado[4], int AC) {
 static PCD8544 lcd;
 
 void setup() {
-  // PCD8544-compatible displays may have a different resolution...
   lcd.begin(84, 48);
   Serial.begin(115200);
   pinMode(LED(0) , OUTPUT);
@@ -125,7 +123,7 @@ void loop() {
       Serial.print(resultado[i]);
       Serial.print("\t");
     }
-    
+
     Serial.print("\n");
   }
 }

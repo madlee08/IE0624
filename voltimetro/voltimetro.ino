@@ -1,20 +1,3 @@
-/*
- * To use this sketch, connect the eight pins from your LCD like thus:
- *
- * Pin 1 -> +3.3V (rightmost, when facing the display head-on)
- * Pin 2 -> Arduino digital pin 3
- * Pin 3 -> Arduino digital pin 4
- * Pin 4 -> Arduino digital pin 5
- * Pin 5 -> Arduino digital pin 7
- * Pin 6 -> Ground
- * Pin 7 -> 10uF capacitor -> Ground
- * Pin 8 -> Arduino digital pin 6
- *
- * Since these LCDs are +3.3V devices, you have to add extra components to
- * connect it to the digital pins of the Arduino (not necessary if you are
- * using a 3.3V variant of the Arduino, such as Sparkfun's Arduino Pro).
- */
-
 #include <PCD8544.h>
 #include <math.h>
 
@@ -24,8 +7,20 @@
 #define ACDCpin 12
 #define LED(x) (x == 0 ? 8 : (x == 1 ? 9 : (x == 2 ? 10 : (x == 3 ? 11 : -1))))
 
+/* Nota sobre la conversión digital-analógico de las tensiones:
+ De la hoja de datos del Arduino UNO se sabe que la resolución
+ de los ADC son 1024. Esto quiere decir que el rango de tensiones
+ entre -24 V a 24 V hay 1024 intervalos. La función analogRead()
+ devuelve un número N entre 0 a 1023. Este valor N se divide entre
+ 1023 para normalizar el valor entre 0 a 1 y a su vez se multiplica
+ por 48. Así M = 48*N/1023 será un número entre 0 a 48. Finalmente,
+ se le resta 24 para que el rango de tensiones quede entre -24 V a
+ 24, puesto que P = M - 24 = -24 + 48*N/1023 quedará entre -24 a 24.
+*/
 
 void leer_tensiones(float tensiones[4][SIZE], int AC) {
+  // desplaza los valores del array a la derecha para
+  // conservar solamente las últimas 5 lecturas
   for (int i = 0; i < 4; i++) {
     for (int j = SIZE-1; j > 0; j--) {
       tensiones[i][j] = tensiones[i][j-1];
@@ -35,6 +30,7 @@ void leer_tensiones(float tensiones[4][SIZE], int AC) {
 
   float temp[4];
 
+  // modo AC: muestrea 20 veces la tensión y guarda el valor máximo
   if (AC) {
     for (int i = 0; i < SAMPLES; i++) {
       temp[0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
@@ -50,6 +46,7 @@ void leer_tensiones(float tensiones[4][SIZE], int AC) {
     }
   }
 
+  // modo DC: guarda la tensión en el instante que realiza la lectura
   else {
       tensiones[0][0] = -24.0 + (analogRead(A0)/1023.0)*48.0;
       tensiones[1][0] = -24.0 + (analogRead(A1)/1023.0)*48.0;
@@ -64,14 +61,19 @@ void procesar(float resultado[4], float tensiones[4][SIZE], int AC) {
     for (int j = 1; j < SIZE; j++) {
       resultado[i] += tensiones[i][j];
     }
+
+    // calcula el promedio de lecturas para DC
     resultado[i] /= SIZE-1;
 
+    // y lo divide entre sqrt(2) si el modo es AC
     if (AC) resultado[i] /= sqrt(2);
   }
 }
 
 void leds(float resultado[4], int AC) {
   for (int i = 0; i < 4; i++) {
+    // fijar el umbral en 20 V o 20/sqrt(2)
+    // para encender los LEDs
     float threshold = 20.0;
 
     if (AC) threshold /= sqrt(2);
@@ -86,6 +88,8 @@ void leds(float resultado[4], int AC) {
 
 static PCD8544 lcd;
 
+// para configurar los pines, serial y
+// pantalla LCD
 void setup() {
   lcd.begin(84, 48);
   Serial.begin(115200);
@@ -107,6 +111,7 @@ void loop() {
   procesar(resultado, tensiones, AC);
   leds(resultado, AC);
 
+  // imprime las lecturas en la pantalla LCD
   for (int i = 0; i < 4; i++) {
     lcd.setCursor(0, i);
     lcd.print("V");
@@ -115,6 +120,7 @@ void loop() {
     lcd.print(resultado[i]);
   }
 
+  // envía las lecturas por comunicación serial
   if (digitalRead(USARTpin)) {
     for (int i = 0; i < 4; i++) {
       Serial.print("V");

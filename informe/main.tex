@@ -1,0 +1,85 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}%Para Tildes y ñ%
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage{graphicx} 
+\usepackage{pdfpages} %para importar paginas de un pdf 
+\usepackage{booktabs}
+\usepackage{hyperref} 
+\usepackage{geometry} 
+\usepackage{multirow}
+\usepackage{float}		% Para ubicar las tablas y figuras justo después del texto
+\usepackage{pdfpages}
+\usepackage{enumerate}%listas y viñetas
+\usepackage{xcolor}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{titling}
+
+\decimalpoint
+\addto\captionsspanish{\renewcommand{\listtablename}{Índice de tablas}}	% Cambiar nombre a lista de tablas 
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}} % Cambiar nombre a tablas
+\setlength{\droptitle}{-1in} 
+\geometry{a4paper, margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=orange,
+    urlcolor=blue,
+    citecolor=cyan,
+    pdftitle={IE0624 Laboratorio de microcontroladores | Laboratorio 03 | Mike Mai Chen - Javier Solera Bolaños},
+    pdfpagemode=FullScreen,
+}
+
+
+\renewcommand{\tt}[1]{\texttt{#1}}
+\renewcommand{\it}[1]{\textit{#1}}
+\renewcommand{\bf}[1]{\textbf{#1}}
+
+%---------------------------------------
+\author{\small Estudiantes\\Javier Solera Bolaños | B66963\\Mike Mai Chen | B94487\\\vspace*{0.5in}\\\small Profesor\\Marco Villalta Fallas\vspace*{1.35in}}
+\title{Universidad de Costa Rica\\{\small Facultad de Ingeniería\\Escuela de Ingeniería Eléctrica\\IE-0624 Laboratorio de Microcontroladores\\II ciclo 2023\\\vspace*{0.55in} Laboratorio 03}\\ Osciloscopio con GPIOs, ADC y comunición serial del Arduino UNO\vspace*{1.35in}}
+\date{05 de octubre de 2023} 
+
+
+%---------------------------------------
+\begin{document} 
+\maketitle  
+\thispagestyle{empty}%%no numerar la portada
+\renewcommand{\thepage}{\roman{page}}
+\newpage
+{
+    \hypersetup{linkcolor=black}
+    \tableofcontents
+}
+\newpage
+%\listoffigures 
+%\newpage
+%\listoftables  
+%\newpage
+%%%%%%%%%%  
+\renewcommand{\thepage}{\arabic{page}} 
+\setcounter{page}{1}
+
+\newpage  
+\input{1_Repositorio}
+\input{2_Resumen}
+\input{3_Nota_teorica}
+\input{4-1_diseno-hardware}
+\input{4-2_diseno-software}
+\input{5_Listas}
+\input{7_Resultados}
+\input{8_Conclusiones}
+\newpage
+
+\input{9_Bibliografia}
+
+\newpage
+
+\input{10_Anexos}
+
+\end{document}
+ 

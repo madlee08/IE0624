@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
@@ -65,6 +65,9 @@ static void clock_setup(void)
 
 	/* Enable clocks for USART2 and dac */
 	rcc_periph_clock_enable(RCC_USART1);
+
+	/* And ADC*/
+	rcc_periph_clock_enable(RCC_ADC1);
 }
 
 static void usart_setup(void)
@@ -86,12 +89,36 @@ static void usart_setup(void)
 	usart_enable(USART_CONSOLE);
 }
 
+static void adc_setup(void)
+{
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0);
+
+	adc_power_off(ADC1);
+	adc_disable_scan_mode(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_3CYC);
+
+	adc_power_on(ADC1);
+
+}
+
+static uint16_t read_adc_naiive(uint8_t channel)
+{
+	uint8_t channel_array[16];
+	channel_array[0] = channel;
+	adc_set_regular_sequence(ADC1, 1, channel_array);
+	adc_start_conversion_regular(ADC1);
+	while (!adc_eoc(ADC1));
+	uint16_t reg16 = adc_read_regular(ADC1);
+	return reg16;
+}
+
 
 int main(void)
 {
 	int i = 1;
 	clock_setup();
 	usart_setup();
+	adc_setup();
 	printf("hi guys!\n");
 
 	/* green led for ticking */
@@ -100,7 +127,8 @@ int main(void)
 
 	while (1) {
 
-		printf("tick: %d\n", i++);
+		uint16_t input_adc0 = read_adc_naiive(0);
+		printf("ADC: %d\n", input_adc0);
 
 		/* LED on/off */
 		gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);

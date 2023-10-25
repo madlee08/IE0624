@@ -1,30 +1,18 @@
-/*
- * This file is part of the libopencm3 project.
- *
- * Copyright (C) 2014 Chuck McManis <cmcmanis@mcmanis.com>
- *
- * This library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <math.h>
+#include "clock.h"
+#include "console.h"
+#include "sdram.h"
+#include "lcd-spi.h"
+#include "gfx.h"
 #include "spi-mems.h"
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/usart.h>
 
 #define LED_DISCO_GREEN_PORT GPIOG
@@ -49,39 +37,6 @@ int _write(int file, char *ptr, int len)
 	return -1;
 }
 
-static void clock_setup(void)
-{
-	rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
-	/* Enable GPIOD clock for LED & USARTs. */
-	rcc_periph_clock_enable(RCC_GPIOG);
-	rcc_periph_clock_enable(RCC_GPIOA);
-	rcc_periph_clock_enable(RCC_GPIOF | RCC_GPIOC);
-
-	/* Enable clocks for USART2 and dac */
-	rcc_periph_clock_enable(RCC_USART1);
-
-	/* And ADC*/
-	rcc_periph_clock_enable(RCC_ADC1);
-}
-
-static void usart_setup(void)
-{
-	/* Setup GPIO pins for USART1 transmit. */
-	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9);
-
-	/* Setup USART1 TX pin as alternate function. */
-	gpio_set_af(GPIOA, GPIO_AF7, GPIO9);
-
-	usart_set_baudrate(USART_CONSOLE, 115200);
-	usart_set_databits(USART_CONSOLE, 8);
-	usart_set_stopbits(USART_CONSOLE, USART_STOPBITS_1);
-	usart_set_mode(USART_CONSOLE, USART_MODE_TX);
-	usart_set_parity(USART_CONSOLE, USART_PARITY_NONE);
-	usart_set_flow_control(USART_CONSOLE, USART_FLOWCONTROL_NONE);
-
-	/* Finally enable the USART. */
-	usart_enable(USART_CONSOLE);
-}
 
 static void spi_setup(void) {
 	/* Enable the GPIO ports whose pins we are using */
@@ -108,7 +63,7 @@ static void spi_setup(void) {
 	
 	SPI_CR2(SPI5) |= SPI_CR2_SSOE;
 	SPI_CR1(SPI5) = cr_tmp;
-
+	
 	/*
 	 * These parameters are sort of random, clearly I need
 	 * set something. Based on the app note I reset the 'baseline'
@@ -124,6 +79,7 @@ static void spi_setup(void) {
 
 static void adc_setup(void)
 {
+	rcc_periph_clock_enable(RCC_ADC1);
 	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0);
 
 	adc_power_off(ADC1);
@@ -151,10 +107,11 @@ int main(void)
 {
 	int16_t vecs[3];
 	int16_t baseline[3];
-	int tmp;
 
 	clock_setup();
-	usart_setup();
+	console_setup(115200);
+	sdram_init();
+	lcd_spi_init();
 	adc_setup();
 	spi_setup();
 
@@ -166,34 +123,45 @@ int main(void)
 	baseline[1] = 0;
 	baseline[2] = 0;
 
+	gfx_init(lcd_draw_pixel, 240, 320);
+	gfx_setTextColor(LCD_YELLOW, LCD_BLACK);
+	gfx_setTextSize(2);
+
 	int16_t abel;
-
+	char txt[20];
+	char txt2[20];
 	while (1) {
-
-
-		tmp = read_xyz(vecs);
+		gfx_fillScreen(LCD_BLACK);
+		gfx_setCursor(0, 36);
+		read_xyz(vecs);
 		uint16_t input_adc0 = read_adc_naiive(0);
 		float volt = 3.0*input_adc0/4095.0;
-	
-		printf("ADC: %d\n", input_adc0);
+		printf("Bateria: %f\t", volt);
+		sprintf(txt2, "%.2f", volt);
+		gfx_puts("Bateria: ");
+		gfx_puts(txt2);
+		gfx_puts("\n");
 
-		for (i = 0; i < 3; i++) {
-			int pad;
+		gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
+		for (int i = 0; i < 3; i++) {
 			abel = vecs[i] - baseline[i];
 			printf("%s%d\t", axes[i], abel);
+			gfx_puts(axes[i]);
+			sprintf(txt, "%d", abel);
+			gfx_puts(txt);
+			gfx_puts("\n");
+
+			gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
 		}
 		printf("\n");
+		gfx_puts("\r");
 
 		baseline[0] = vecs[0];
 		baseline[1] = vecs[1];
 		baseline[2] = vecs[2];
 
-		/* LED on/off */
-		gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
-
-		for (int i = 0; i < 1000000; i++) { /* Wait a bit. */
-			__asm__("NOP");
-		}
+		msleep(10);
+		lcd_show_frame();
 	}
 
 	return 0;

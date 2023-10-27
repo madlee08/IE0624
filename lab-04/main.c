@@ -17,6 +17,7 @@
 
 #define LED_DISCO_GREEN_PORT GPIOG
 #define LED_DISCO_GREEN_PIN GPIO13
+#define LED_DISCO_RED_PIN GPIO14
 
 #define USART_CONSOLE USART1
 
@@ -79,6 +80,8 @@ int main(void)
 	/* green led for ticking */
 	gpio_mode_setup(LED_DISCO_GREEN_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
 			LED_DISCO_GREEN_PIN);
+	gpio_mode_setup(LED_DISCO_GREEN_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
+		LED_DISCO_RED_PIN);
 
 	baseline[0] = 0;
 	baseline[1] = 0;
@@ -102,6 +105,10 @@ int main(void)
 
 		if (volt < 8) txt3 = "si";
 		else txt3 = "no";
+
+		if (volt > 8) gpio_clear(LED_DISCO_GREEN_PORT, LED_DISCO_RED_PIN);
+		else gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_RED_PIN);
+
 		if (USART >= 2048) printf("Bateria: %f\t", volt);
 		if (USART >= 2048) printf("Bajo: %s\t", txt3);
 		sprintf(txt2, "%.2f", volt);
@@ -114,7 +121,8 @@ int main(void)
 		else gfx_puts("OFF");
 
 		gfx_puts("\n");
-		gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
+		if (USART >= 2048) gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
+		else gpio_clear(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
 		for (int i = 0; i < 3; i++) {
 			abel = vecs[i] - baseline[i];
 			if (USART >= 2048) printf("%s%d\t", axes[i], abel);
@@ -123,7 +131,6 @@ int main(void)
 			gfx_puts(txt);
 			gfx_puts("\n");
 
-			gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
 		}
 		if (USART >= 2048) printf("\n");
 

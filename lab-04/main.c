@@ -41,6 +41,7 @@ static void adc_setup(void)
 {
 	rcc_periph_clock_enable(RCC_ADC1);
 	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0);
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO2);
 
 	adc_power_off(ADC1);
 	adc_disable_scan_mode(ADC1);
@@ -90,22 +91,33 @@ int main(void)
 	int16_t abel;
 	char txt[20];
 	char txt2[20];
+	char *txt3;
 	while (1) {
 		gfx_fillScreen(LCD_BLACK);
 		gfx_setCursor(0, 36);
 		read_xyz(vecs);
 		uint16_t input_adc0 = read_adc_naiive(0);
-		float volt = 3.0*input_adc0/4095.0;
-		printf("Bateria: %f\t", volt);
+		uint16_t USART = read_adc_naiive(2);
+		float volt = 9*input_adc0/4095.0;
+
+		if (volt < 8) txt3 = "si";
+		else txt3 = "no";
+		if (USART >= 2048) printf("Bateria: %f\t", volt);
+		if (USART >= 2048) printf("Bajo: %s\t", txt3);
 		sprintf(txt2, "%.2f", volt);
 		gfx_puts("Bateria: ");
 		gfx_puts(txt2);
 		gfx_puts("\n");
+		gfx_puts("USART: ");
 
+		if (USART >= 2048) gfx_puts("ON");
+		else gfx_puts("OFF");
+
+		gfx_puts("\n");
 		gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
 		for (int i = 0; i < 3; i++) {
 			abel = vecs[i] - baseline[i];
-			printf("%s%d\t", axes[i], abel);
+			if (USART >= 2048) printf("%s%d\t", axes[i], abel);
 			gfx_puts(axes[i]);
 			sprintf(txt, "%d", abel);
 			gfx_puts(txt);
@@ -113,7 +125,8 @@ int main(void)
 
 			gpio_toggle(LED_DISCO_GREEN_PORT, LED_DISCO_GREEN_PIN);
 		}
-		printf("\n");
+		if (USART >= 2048) printf("\n");
+
 		gfx_puts("\r");
 
 		baseline[0] = vecs[0];

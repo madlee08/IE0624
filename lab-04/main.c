@@ -1,3 +1,31 @@
+/*
+ * This file is part of the libopencm3 project.
+ *
+ * Copyright (C) 2014 Karl Palsson <karlp@tweak.net.au>
+ * Copyright (C) 2015 Piotr Esden-Tempski <piotr@esden.nety>
+ *
+ * This library is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// -------------------------------------------------------------------
+// se agradece a las personas de libopencm3 que proporcionaron los
+// ejemplos para desarrollar este laboratorio. créditos a Karl
+// Palsson & Piotr Esden-Tempski por el ejemplo de adc-dac-printf.c
+// y a Chuck McManis por el resto de ejemplos utilizados para este
+// laboratorio (spi-mems.c, clock.c, console.c, lcd-spi.c, gfx.c,
+// font-7x12.c ysdram.c).
+// -------------------------------------------------------------------
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>

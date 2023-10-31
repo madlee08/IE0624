@@ -1,6 +1,13 @@
 import paho.mqtt.client as mqtt
 import serial
 
+# para saber mas como configurar mqtt, ver
+# https://pypi.org/project/paho-mqtt/#usage-and-api
+
+# para saber mas como configurar el puerto serial, ver
+# https://pyserial.readthedocs.io/en/latest/pyserial.html
+
+
 BROKER="iot.eie.ucr.ac.cr"
 PORT = 1883
 KEEPALIVE = 10
@@ -20,6 +27,8 @@ def on_disconnect(client, userdata, rc):
    print(f"Se ha desconectado de {BROKER} exitosamente.") 
 
 
+puerto = serial.Serial(DEVICE, BAUDRATE)
+
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
@@ -28,11 +37,6 @@ client.username_pw_set(TOKEN)
 client.connect(BROKER, PORT, KEEPALIVE)
 
 client.loop()
-
-# para saber mas como configurar el puerto serial, ver
-# https://pyserial.readthedocs.io/en/latest/pyserial.html
-
-puerto = serial.Serial(DEVICE, BAUDRATE)
 
 try:
     while True:

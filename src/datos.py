@@ -45,7 +45,17 @@ try:
         # if datos and datos.startswith('Bateria'):
         #     print(datos, end='')
         #     client.publish(TOPIC, '{' + datos.replace('\t', ',').removesuffix(',\r\n') + '}')
-        print(input())
+        inp = input()
+        
+        if 'lumus' in inp:
+            s = '{'
+            s += inp
+            s += ','
+            for i in range(4):
+                s += input()
+                s += ','
+            s = '}'
+            print(s)
 
 except KeyboardInterrupt:
     # puerto.close()

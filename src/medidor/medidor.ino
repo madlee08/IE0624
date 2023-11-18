@@ -23,16 +23,18 @@ Average avgV;
 Average avgI;
 
 void setup() {
+  // objeto para iniciar el LCD
   lcd.init();
   lcd.clear();
   lcd.backlight();
 
+  // objetos de la clase Average para medir en DC
 	avgV.begin(5.00, AVG_WINDOW, ADC_10BIT, CNT_SCAN);
   avgV.start();
   avgI.begin(5.00, AVG_WINDOW, ADC_10BIT, CNT_SCAN);
   avgI.start();
 
-  // configure for automatic base-line restoration and single scan mode:
+  // objeto de una clase Power para medir en AC
 	acPower.begin(acVoltRange, acCurrRange, RMS_WINDOW, ADC_10BIT, BLR_ON, SGL_SCAN);
   acPower.start();
   
@@ -42,27 +44,34 @@ void setup() {
 void loop() {
 	acVolt = analogRead(ADC_VIN);
 	acCurr = analogRead(ADC_IIN);
+  
 	acPower.update(acVolt, acCurr);
   avgV.update(acVolt);
   avgI.update(acCurr);
 
 	cnt++;
+
+  // PARTE AC
 	if(cnt >= 250 && MODE == 0) { // publish every 0.5s
 		acPower.publish();
 
+    // tension
     lcd.clear();
     lcd.setCursor(1,0);
     lcd.print(acPower.rmsVal1);
     lcd.print("V");
 
+    // corriente
     lcd.setCursor(8,0);
     lcd.print(acPower.rmsVal2);
     lcd.print("A");
 
+    // potencia real
     lcd.setCursor(1,1);
     lcd.print(acPower.realPwr);
     lcd.print("W");
 
+    // factor de potencia
     lcd.setCursor(8,1);
     lcd.print(acPower.pf);
     lcd.print("pf");
@@ -71,19 +80,23 @@ void loop() {
 		acPower.start();
 	}
 
+  // PARTE DC
 	if(cnt >= 100 and MODE == 1) {
 		avgV.publish();
     avgI.publish();
 
+    // tension
     lcd.clear();
     lcd.setCursor(1,0);
     lcd.print(avgV.average);
     lcd.print("V");
 
+    // corriente
     lcd.setCursor(8,0);
     lcd.print(avgI.average);
     lcd.print("A");
 
+    // potencia real
     lcd.setCursor(1,1);
     lcd.print(avgV.average*avgI.average);
     lcd.print("W");

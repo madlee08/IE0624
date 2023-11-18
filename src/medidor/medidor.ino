@@ -1,3 +1,13 @@
+/* este código está basado en los ejemplos AC_powermeter.ino de TrueRMS.h y 
+HelloWorld.pde de LiquidCrystal_I2C.h, por lo que los créditos del código de
+ambas librerías y ejemplos van a Martin Stokroos y Frank de Brabander &
+Marco Schwartz, respectivamente.
+
+Los enlaces a las librerías son
+- Medidor: https://github.com/MartinStokroos/TrueRMS
+- LCD i2c: https://reference.arduino.cc/reference/en/libraries/liquidcrystal-i2c/
+*/
+
 #include <TrueRMS.h>
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
@@ -38,13 +48,17 @@ void setup() {
 	acPower.begin(acVoltRange, acCurrRange, RMS_WINDOW, ADC_10BIT, BLR_ON, SGL_SCAN);
   acPower.start();
   
-	nextLoop = micros() + LPERIOD; // Set the loop timer variable for the next loop interval.
+  // delay setup
+	nextLoop = micros() + LPERIOD;
 	}
 
 void loop() {
+
+  // mediciones instantáneas
 	acVolt = analogRead(ADC_VIN);
 	acCurr = analogRead(ADC_IIN);
-  
+
+  // actualizar objetos
 	acPower.update(acVolt, acCurr);
   avgV.update(acVolt);
   avgI.update(acCurr);
@@ -52,7 +66,7 @@ void loop() {
 	cnt++;
 
   // PARTE AC
-	if(cnt >= 250 && MODE == 0) { // publish every 0.5s
+	if(cnt >= 250 && MODE == 0) {
 		acPower.publish();
 
     // tension

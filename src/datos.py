@@ -3,8 +3,6 @@ import paho.mqtt.client as mqtt
 # para saber mas como configurar mqtt, ver
 # https://pypi.org/project/paho-mqtt/#usage-and-api
 
-# para saber mas como configurar el puerto serial, ver
-# https://pyserial.readthedocs.io/en/latest/pyserial.html
 
 
 BROKER="iot.eie.ucr.ac.cr"
@@ -41,17 +39,24 @@ try:
         inp = input()
 
         if 'lumos' in inp:
+            # formatear datos en formato JSON
             s = '{'
             data = inp.split(":")
             s += inp
             s += ','
+
             for i in range(4):
                 s += input()
                 s += ','
+            
             s = s[0:-2]
             s += '}'
+
+            # escribir en txt
             file.write(s)
             file.write('\n')
+
+            # enviar a thingsboard
             client.publish(TOPIC, s)
 
 except KeyboardInterrupt:

@@ -38,6 +38,8 @@ client.connect(BROKER, PORT, KEEPALIVE)
 
 client.loop()
 
+file = open('datos.txt', 'w')
+
 try:
     while True:
         inp = input()
@@ -52,9 +54,11 @@ try:
                 s += ','
             s = s[0:-2]
             s += '}'
-            print(s)
+            file.write(s)
+            file.write('\n')
             client.publish(TOPIC, s)
 
 except KeyboardInterrupt:
     puerto.close()
     client.disconnect()
+    file.close()
